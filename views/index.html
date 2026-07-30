@@ -1,0 +1,2553 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Sistem Informasi & PSB Online RA Tawang Rejosari</title>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+
+    <link rel="stylesheet" href="/css/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+
+    <style>
+      #map {
+        width: 100%;
+        height: 380px;
+        border-radius: 16px;
+        border: 2px solid var(--border-soft);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        z-index: 10;
+      }
+      .form-grid-smart {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 16px;
+        margin-bottom: 18px;
+        width: 100%;
+      }
+      .full-width-field {
+        grid-column: 1 / -1;
+        width: 100%;
+      }
+      @media screen and (max-width: 768px) {
+        .form-grid-smart,
+        .card-grid,
+        .form .card-grid,
+        #form-psb div[style*="grid-template-columns"],
+        section div[style*="grid-template-columns"] {
+          display: flex !important;
+          flex-direction: column !important;
+          gap: 14px !important;
+          width: 100% !important;
+        }
+        #form-psb input,
+        #form-psb select,
+        #form-psb textarea {
+          width: 100% !important;
+          max-width: 100% !important;
+          font-size: 15px !important;
+          padding: 12px !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="app-header">
+      <div class="header-inner">
+        <div class="brand">
+          <div class="brand-logo">
+            <img
+              src="/images/logo.jpeg"
+              alt="Logo RA"
+              onerror="this.outerHTML = '🕌'"
+            />
+          </div>
+          <div class="brand-text">
+            <span class="brand-title">RA Tawang Rejosari</span>
+            <span class="brand-subtitle"
+              >Raudhatul Athfal - Pendidikan Anak Usia Dini</span
+            >
+          </div>
+        </div>
+
+        <nav class="main-nav">
+          <ul class="nav-main">
+            <li><a href="#beranda">Beranda</a></li>
+            <li><a href="#psb-online">PSB Online</a></li>
+            <li>
+              <a
+                href="#status-psb"
+                style="
+                  background: var(--accent-yellow);
+                  color: #854d0e;
+                  font-weight: 700;
+                "
+                >🔍 Cek Status</a
+              >
+            </li>
+          </ul>
+
+          <div class="nav-services">
+            <input type="checkbox" id="service-toggle" class="service-toggle" />
+            <label
+              for="service-toggle"
+              class="service-toggle-label"
+              title="Buka Menu"
+              ><span></span><span></span><span></span
+            ></label>
+            <div class="service-menu">
+              <div class="mobile-only-menu">
+                <a href="#beranda">🏠 Beranda</a>
+                <a href="#psb-online" style="color: #16a34a; font-weight: 700"
+                  >📝 PSB Online</a
+                >
+                <a href="#status-psb" style="color: #ca8a04; font-weight: 700"
+                  >🔍 Cek Status</a
+                >
+                <hr
+                  style="
+                    margin: 6px 0;
+                    border: 0;
+                    border-top: 1px dashed #d9f99d;
+                  "
+                />
+              </div>
+              <a
+                href="/login/admin"
+                style="color: var(--primary); font-weight: 700"
+                >🔐 Login Admin</a
+              >
+              <a
+                href="/login/kepsek"
+                style="color: var(--accent); font-weight: 700"
+                >👑 Login Kepala Sekolah</a
+              >
+            </div>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <main class="app-main">
+      <div class="app-shell">
+        <!-- BERANDA HERO -->
+        <section id="beranda" class="section">
+          <div class="hero" style="position: relative">
+            <div>
+              <h1 style="color: #3f6212">
+                Portal Informasi & PSB Online<br />RA Tawang Rejosari
+              </h1>
+              <p>
+                “Bermain dan Belajar Menuju Insan Yang Bertaqwa”. Selamat datang
+                di portal resmi penerimaan peserta didik baru Tahun Pelajaran
+                2026/2027.
+              </p>
+              <div class="hero-buttons">
+                <a
+                  href="#psb-online"
+                  class="btn btn-primary"
+                  style="background: var(--accent); border: none; color: #fff"
+                  >📝 Isi Formulir Sekarang</a
+                >
+                <a
+                  href="#status-psb"
+                  class="btn btn-outline"
+                  style="
+                    border-color: #ca8a04;
+                    color: #854d0e;
+                    background: #fef9c3;
+                  "
+                  >🔍 Cek Status Pendaftaran</a
+                >
+              </div>
+              <div class="hero-badges">
+                <span>⭐ Akreditasi B</span>
+                <span>🎒 Free SPP 1 Bulan*</span>
+                <span>✔ Bisa Dicicil (Angsuran)</span>
+                <span>✔ Bisa Daftar Langsung (Offline)</span>
+              </div>
+            </div>
+
+            <div
+              class="hero-side"
+              style="display: flex; flex-direction: column; gap: 16px"
+            >
+              <div
+                class="mascot-box"
+                style="margin-bottom: 0 !important"
+                onclick="
+                  alert(
+                    'Assalamu\'alaikum Sahabat! 🌟\n\nSelamat datang di portal RA Tawang Rejosari Semarang.\n\nKami siap membimbing putra-putri tercinta menjadi generasi Qur\'ani yang cerdas, ceria, dan berakhlak mulia!',
+                  )
+                "
+                title="Klik Sapaan RA Tawang Rejosari"
+              >
+                <!-- BINGKAI POLAROID AGAR FOTO JPG TAMPIL RAPI -->
+                <img
+                  src="/images/maskot-putri.jpg"
+                  alt="Maskot RA"
+                  class="jpg-polaroid-frame"
+                  onerror="this.outerHTML = '🧕🏻📖'"
+                />
+                <div>
+                  <span
+                    style="
+                      font-size: 10px;
+                      font-weight: 800;
+                      color: #166534;
+                      background: #bbf7d0;
+                      padding: 3px 10px;
+                      border-radius: 6px;
+                      text-transform: uppercase;
+                      display: inline-block;
+                      margin-bottom: 4px;
+                    "
+                    >Melangkah dengan Bismillah</span
+                  >
+                  <div
+                    style="
+                      font-size: 15px;
+                      font-weight: 800;
+                      color: #1a2e05;
+                      line-height: 1.2;
+                    "
+                  >
+                    Siswa-siswi Qur'ani
+                  </div>
+                  <div
+                    style="
+                      font-size: 11.5px;
+                      color: #15803d;
+                      font-weight: 600;
+                      margin-top: 4px;
+                    "
+                  >
+                    👆 Klik Sapaan Islami dari RA
+                  </div>
+                </div>
+              </div>
+
+              <div class="hero-card">
+                <h2>Keunggulan Sekolah Kami</h2>
+                <ul>
+                  <li>Lingkungan belajar Islami, aman, dan ramah anak</li>
+                  <li>
+                    Tenaga pengajar profesional (S1 PAUD/TK) & penuh kasih
+                  </li>
+                  <li>Fasilitas belajar perlengkapan penuh (All-in)</li>
+                  <li>
+                    Metode pembayaran fleksibel (Transfer BRI / Cash / Cicilan)
+                  </li>
+                  <li>Sistem pemantauan & transparansi digital</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- BANNER ANIMASI KARTUN BERJALAN -->
+        <div
+          class="tk-banner-anim"
+          style="
+            background: linear-gradient(
+              180deg,
+              #fef9c3 0%,
+              #ffffff 60%,
+              #dcfce7 100%
+            );
+            border: 2.5px solid #fde047;
+            border-radius: 28px;
+            padding: 28px 22px 75px;
+            margin: 24px 0 36px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(101, 163, 13, 0.12);
+          "
+        >
+          <span
+            style="
+              position: absolute;
+              top: 12px;
+              left: 10%;
+              font-size: 32px;
+              opacity: 0.7;
+              animation: cloudDrift 18s linear infinite;
+            "
+            >☁️</span
+          >
+          <span
+            style="
+              position: absolute;
+              top: 25px;
+              left: 60%;
+              font-size: 26px;
+              opacity: 0.5;
+              animation: cloudDrift 25s linear infinite 5s;
+            "
+            >☁️</span
+          >
+          <span
+            style="
+              position: absolute;
+              top: 18px;
+              right: 15%;
+              font-size: 30px;
+              opacity: 0.6;
+              animation: cloudDrift 20s linear infinite alternate-reverse;
+            "
+            >🌤️</span
+          >
+
+          <div
+            style="
+              position: relative;
+              z-index: 2;
+              display: flex;
+              align-items: center;
+              justify-content: space-around;
+              flex-wrap: wrap;
+              gap: 20px;
+              margin-bottom: 15px;
+            "
+          >
+            <div
+              style="
+                background: #ffffff;
+                padding: 12px 20px;
+                border-radius: 20px;
+                border: 2px solid #d9f99d;
+                box-shadow: 0 8px 16px rgba(0, 0, 0, 0.05);
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                animation: floatCard 3.5s ease-in-out infinite;
+              "
+            >
+              <div
+                style="
+                  width: 55px;
+                  height: 55px;
+                  border-radius: 50%;
+                  background: #fef9c3;
+                  border: 3px solid var(--primary);
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  font-size: 30px;
+                "
+              >
+                🧕🏻
+              </div>
+              <div style="text-align: left">
+                <span
+                  style="
+                    font-size: 10px;
+                    font-weight: 800;
+                    color: #fff;
+                    background: var(--primary);
+                    padding: 3px 10px;
+                    border-radius: 999px;
+                    text-transform: uppercase;
+                  "
+                  >Bimbingan Islami</span
+                >
+                <h4
+                  style="
+                    margin: 4px 0 2px;
+                    color: #1a2e05;
+                    font-size: 15px;
+                    font-weight: 800;
+                  "
+                >
+                  Bunda Guru Muslimah
+                </h4>
+                <p
+                  style="
+                    margin: 0;
+                    font-size: 11px;
+                    color: #4d7c0f;
+                    font-weight: 600;
+                  "
+                >
+                  Sertifikasi S1 PAUD & Pendidikan Islam, berpengalaman
+                  membimbing anak usia dini.
+                </p>
+              </div>
+            </div>
+
+            <div style="max-width: 440px; text-align: center">
+              <span
+                style="
+                  font-size: 11.5px;
+                  font-weight: 800;
+                  color: #854d0e;
+                  background: #fef9c3;
+                  border: 1px solid #fde047;
+                  padding: 4px 14px;
+                  border-radius: 999px;
+                  display: inline-block;
+                  margin-bottom: 6px;
+                "
+                >🕌 GENERASI QUR'ANI & BERAKHLAK</span
+              >
+              <h3
+                style="
+                  color: #1a2e05;
+                  margin: 0;
+                  font-size: 19px;
+                  font-weight: 800;
+                  line-height: 1.3;
+                "
+              >
+                Belajar Ceria, Bermain Bermakna, & Tumbuh Penuh Cinta
+              </h3>
+              <p
+                style="
+                  font-size: 12.5px;
+                  color: #475569;
+                  margin: 6px 0 0;
+                  line-height: 1.5;
+                "
+              >
+                Menggabungkan kurikulum nasional dengan pembiasaan sholat dhuha,
+                hafalan doa harian, dan lingkungan sekolah yang ramah anak.
+              </p>
+            </div>
+
+            <div
+              style="
+                background: #ffffff;
+                padding: 12px 20px;
+                border-radius: 20px;
+                border: 2px solid #fde047;
+                box-shadow: 0 8px 16px rgba(0, 0, 0, 0.05);
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                animation: floatCard 3.5s ease-in-out infinite 1.5s;
+              "
+            >
+              <span style="font-size: 28px">👦🏻</span>
+              <div
+                style="
+                  text-align: center;
+                  background: #fef9c3;
+                  padding: 6px 12px;
+                  border-radius: 12px;
+                  font-weight: 800;
+                  color: #854d0e;
+                  font-size: 12px;
+                "
+              >
+                📖 Iqro' & Doa
+              </div>
+              <span style="font-size: 28px">👧🏻</span>
+            </div>
+          </div>
+
+          <!-- JALAN RAYA DENGAN AYUNAN LANGKAH HALUS (MENAPAK DI RUMPUT) -->
+          <div class="cartoon-road">
+            <div class="walking-parade">
+              <div class="walker kid-1" title="Santri Putra Berpeci">
+                <span class="char-emoji">👦🏻</span>
+              </div>
+              <div class="walker kid-2" title="Santri Putri Berhijab">
+                <span class="char-emoji">🧕🏻</span>
+              </div>
+              <div class="walker kid-3" title="Anak Laki-Laki Membawa Tas">
+                <span class="char-emoji">👦🏻🎒</span>
+              </div>
+              <div class="walker kid-4" title="Bunda Guru Muslimah">
+                <span class="char-emoji">👩🏻‍🏫</span>
+              </div>
+              <div class="walker school-bus" title="Bus Sekolah RA">
+                <span class="char-emoji">🚌</span>
+              </div>
+            </div>
+          </div>
+
+          <style>
+            @keyframes walkAcrossScreen {
+              0% {
+                transform: translateX(-200px);
+              }
+              100% {
+                transform: translateX(calc(100vw + 400px));
+              }
+            }
+            @keyframes superSmoothStroll {
+              0%,
+              100% {
+                transform: translateY(0px) rotate(0deg);
+              }
+              50% {
+                transform: translateY(-1.5px) rotate(1deg);
+              }
+            }
+            @keyframes gentleAvatarFloat {
+              0%,
+              100% {
+                transform: translateY(0px) scale(1);
+              }
+              50% {
+                transform: translateY(-5px) scale(1.04);
+              }
+            }
+            .walker .char-emoji {
+              font-size: 38px !important;
+              display: inline-block !important;
+              filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.15)) !important;
+              animation: superSmoothStroll 3s ease-in-out infinite !important;
+            }
+            .kid-1 .char-emoji {
+              animation-delay: 0s !important;
+            }
+            .kid-2 .char-emoji {
+              animation-delay: 0.4s !important;
+            }
+            .kid-3 .char-emoji {
+              animation-delay: 0.8s !important;
+            }
+            .kid-4 .char-emoji {
+              animation-delay: 1.2s !important;
+            }
+            .school-bus .char-emoji {
+              font-size: 48px !important;
+              transform: scaleX(-1) !important;
+              animation: gentleAvatarFloat 2.5s ease-in-out infinite !important;
+            }
+            @keyframes cloudDrift {
+              0% {
+                transform: translateX(-50px);
+              }
+              100% {
+                transform: translateX(300px);
+              }
+            }
+            @keyframes floatCard {
+              0%,
+              100% {
+                transform: translateY(0px);
+              }
+              50% {
+                transform: translateY(-7px);
+              }
+            }
+            @media (max-width: 768px) {
+              .walker .char-emoji {
+                font-size: 32px !important;
+              }
+              .school-bus .char-emoji {
+                font-size: 40px !important;
+              }
+              .walking-parade {
+                gap: 22px !important;
+                animation-duration: 25s !important;
+              }
+            }
+          </style>
+        </div>
+
+        <!-- PROFIL, SEJARAH, VISI, MISI & TUJUAN -->
+        <section id="profil-sekolah" class="section">
+          <h2>Profil, Visi, Misi & Tujuan Madrasah ✨</h2>
+          <p class="desc">
+            Mengenal lebih dekat landasan nilai, sejarah singkat, dan arah
+            pendidikan RA Tawang Rejosari.
+          </p>
+          <div
+            class="card-grid"
+            style="
+              grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+              gap: 16px;
+              margin-bottom: 16px;
+            "
+          >
+            <div
+              class="card"
+              style="border-left: 4px solid var(--primary); background: #fcfdfa"
+            >
+              <h3 style="color: var(--primary)">🏛️ Sejarah Singkat Madrasah</h3>
+              <p style="font-size: 13px; color: #365314; line-height: 1.6">
+                RA Tawang Rejosari didirikan pada tahun 2008 oleh Yayasan Sinar
+                Mafatihul Huda untuk memberikan pendidikan akademik dan
+                keagamaan yang terjangkau bagi masyarakat sekitar. Berawal dari
+                22 murid, lembaga ini terus berkembang dan resmi mendapatkan
+                izin operasional Kementerian Agama pada 6 Mei 2010. Dalam
+                pembelajarannya (Senin-Jumat, 08.00–11.00), RA ini memadukan
+                Kurikulum Nasional dengan kekhasan Pendidikan Holistik Berbasis
+                Karakter (PHBK) binaan Indonesia Heritage Foundation. Hingga
+                kini, sekolah terus meningkatkan kualitasnya melalui berbagai
+                pelatihan rutin bagi para guru.
+              </p>
+            </div>
+            <div
+              class="card"
+              style="
+                border-left: 4px solid var(--accent);
+                background: #fffafb;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+              "
+            >
+              <h3 style="color: var(--accent)">🌟 Visi Madrasah</h3>
+              <blockquote
+                style="
+                  margin: 0;
+                  padding: 12px 14px;
+                  background: #fee2e2;
+                  border-radius: 10px;
+                  border: 1px dashed #f87171;
+                  color: #7f1d1d;
+                  font-weight: 700;
+                  font-size: 14px;
+                  text-align: center;
+                  font-style: italic;
+                "
+              >
+                "Mewujudkan anak didik yang berakhlak mulia, cerdas, sehat,
+                ceria, berkarakter dan penuh cinta."
+              </blockquote>
+            </div>
+          </div>
+
+          <div
+            class="card-grid"
+            style="
+              grid-template-columns: 1fr 1fr;
+              gap: 16px;
+              margin-bottom: 20px;
+            "
+          >
+            <div class="card" style="border-top: 4px solid var(--primary)">
+              <h3 style="color: var(--primary); margin-bottom: 10px">
+                🎯 Misi Madrasah
+              </h3>
+              <ul class="list" style="color: #365314; font-size: 13px">
+                <li>
+                  1. Membiasakan budi pekerti dan nilai-nilai agama melalui
+                  keteladanan sehari-hari.
+                </li>
+                <li>
+                  2. Membiasakan perilaku hidup bersih dan sehat (PHBS) serta
+                  peduli lingkungan.
+                </li>
+                <li>
+                  3. Melaksanakan pembelajaran yang menumbuhkan sikap gotong
+                  royong dan toleransi.
+                </li>
+                <li>
+                  4. Menumbuhkan kemampuan bernalar kritis dan kreatif melalui
+                  bermain bermakna.
+                </li>
+                <li>
+                  5. Menumbuhkan rasa saling asah, asih, dan asuh antar seluruh
+                  warga sekolah.
+                </li>
+              </ul>
+            </div>
+            <div
+              class="card"
+              style="border-top: 4px solid var(--accent-yellow)"
+            >
+              <h3 style="color: #854d0e; margin-bottom: 10px">
+                🏆 Tujuan Madrasah
+              </h3>
+              <ul class="list" style="color: #365314; font-size: 13px">
+                <li>
+                  ✔ Terwujudnya pembiasaan ibadah harian dan penanaman budi
+                  pekerti luhur, sopan santun, serta kejujuran melalui
+                  keteladanan.
+                </li>
+                <li>
+                  ✔ Pada akhir tahun ajaran 2026/2027, lulusan mandiri dalam
+                  melakukan PHBS dasar di sekolah maupun di rumah.
+                </li>
+                <li>
+                  ✔ Menciptakan lingkungan belajar yang inklusif, saling
+                  menghargai perbedaan, dan menjunjung tinggi toleransi.
+                </li>
+                <li>
+                  ✔ Menumbuhkan empati melalui kegiatan pembelajaran kelompok
+                  dan pembiasaan saling peduli (asah, asih, asuh).
+                </li>
+                <li>
+                  ✔ Anak mampu berpikir kritis, kreatif, dan mampu memecahkan
+                  masalah sederhana.
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- REVISI DOSEN: AKREDITASI ALA NONGKEE (50:50) & KOTAK KEGIATAN MURID -->
+          <div class="akreditasi-grid-dual">
+            <!-- Kolom Kiri: Kartu Akreditasi B -->
+            <div class="nongkee-akreditasi-card">
+              <div
+                class="akreditasi-img-wrap"
+                onclick="openCertModal()"
+                title="Klik untuk memperbesar sertifikat"
+              >
+                <img
+                  src="/images/sertifikat-akreditasi.jpg"
+                  alt="Sertifikat Akreditasi"
+                  onerror="
+                    this.src =
+                      'https://via.placeholder.com/140x100?text=Sertifikat+BAN-PAUD'
+                  "
+                />
+                <div
+                  style="
+                    position: absolute;
+                    bottom: 0;
+                    left: 0;
+                    width: 100%;
+                    background: rgba(0, 0, 0, 0.6);
+                    color: #fff;
+                    font-size: 9px;
+                    text-align: center;
+                    padding: 2px 0;
+                  "
+                >
+                  🔍 Klik Zoom
+                </div>
+              </div>
+              <div style="flex: 1; min-width: 180px">
+                <div
+                  style="
+                    display: inline-block;
+                    background: #854d0e;
+                    color: #fff;
+                    font-size: 10px;
+                    font-weight: 800;
+                    padding: 3px 10px;
+                    border-radius: 999px;
+                    margin-bottom: 6px;
+                    text-transform: uppercase;
+                  "
+                >
+                  ⭐ Legalitas Resmi
+                </div>
+                <h3 style="color: #1a2e05; margin: 0 0 4px; font-size: 16px">
+                  Terakreditasi B (BAN-PAUD)
+                </h3>
+                <p
+                  style="
+                    font-size: 12.5px;
+                    color: #475569;
+                    margin: 0;
+                    line-height: 1.5;
+                  "
+                >
+                  Dinilai dan memenuhi Standar Nasional Pendidikan Anak Usia
+                  Dini oleh Badan Akreditasi Nasional, menjamin mutu kurikulum &
+                  fasilitas.
+                </p>
+              </div>
+            </div>
+
+            <!-- Kolom Kanan: Kotak Kegiatan Murid-Murid -->
+            <div class="kegiatan-murid-card">
+              <span
+                style="
+                  font-size: 11px;
+                  font-weight: 800;
+                  color: #166534;
+                  background: #dcfce7;
+                  padding: 3px 10px;
+                  border-radius: 6px;
+                  display: inline-block;
+                  margin-bottom: 6px;
+                  width: fit-content;
+                "
+                >✨ Kegiatan Siswa</span
+              >
+              <h3
+                style="
+                  color: #166534;
+                  font-size: 17px;
+                  font-weight: 800;
+                  margin: 0;
+                  line-height: 1.3;
+                "
+              >
+                Aktif, Mandiri & Berkarakter
+              </h3>
+              <p style="font-size: 12.5px; color: #15803d; margin: 4px 0 0">
+                Membentuk santri yang kritis dan taat beribadah melalui
+                pembiasaan positif setiap hari di lingkungan yang menyenangkan.
+              </p>
+
+              <!-- Lencana / Kegiatan Murid -->
+              <div class="murid-badge-wrap">
+                <span class="murid-badge-item">📖 Hafalan Doa Harian</span>
+                <span class="murid-badge-item">🕋 Sholat Dhuha</span>
+                <span class="murid-badge-item">🎨 Bermain Edukatif</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- PARA PENGAJAR -->
+        <section id="pengajar" class="section">
+          <h2>Para Pengajar KB-RA Tawang Rejosari 👩‍🏫</h2>
+          <p class="desc">
+            Tenaga pendidik profesional, berdedikasi tinggi, dan berakhlak mulia
+            dalam membimbing anak usia dini.
+          </p>
+          <div class="teacher-grid">
+            <div class="teacher-card" onclick="openTeacherModal(0)">
+              <div class="teacher-avatar-wrap">
+                <div class="teacher-avatar">
+                  <img
+                    src="/images/kepsek.jpg"
+                    alt="Kepala RA"
+                    onerror="this.outerHTML = '👩‍🏫'"
+                  />
+                </div>
+              </div>
+              <div class="teacher-info">
+                <div class="teacher-name">Bunda Faizah, S.Pd.AUD., M.Pd.</div>
+                <div class="teacher-role">Kepala Sekolah RA</div>
+                <span class="teacher-click-badge">👆 Klik Lihat Prestasi</span>
+              </div>
+            </div>
+            <div class="teacher-card" onclick="openTeacherModal(1)">
+              <div class="teacher-avatar-wrap">
+                <div class="teacher-avatar">
+                  <img
+                    src="/images/guru_a1.jpg"
+                    alt="Pengajar A"
+                    onerror="this.outerHTML = '👩‍🏫'"
+                  />
+                </div>
+              </div>
+              <div class="teacher-info">
+                <div class="teacher-name">Bunda Fitri Astutik, S.Sos., MM.</div>
+                <div class="teacher-role">Pengajar Kelas A</div>
+                <span class="teacher-click-badge">👆 Klik Lihat Prestasi</span>
+              </div>
+            </div>
+            <div class="teacher-card" onclick="openTeacherModal(2)">
+              <div class="teacher-avatar-wrap">
+                <div class="teacher-avatar">
+                  <img
+                    src="/images/guru_a2.jpg"
+                    alt="Pendamping A"
+                    onerror="this.outerHTML = '👩‍🏫'"
+                  />
+                </div>
+              </div>
+              <div class="teacher-info">
+                <div class="teacher-name">Bunda Tazkiya Ihza Rahmania</div>
+                <div class="teacher-role">Pendamping Kelas A</div>
+                <span class="teacher-click-badge">👆 Klik Lihat Prestasi</span>
+              </div>
+            </div>
+            <div class="teacher-card" onclick="openTeacherModal(3)">
+              <div class="teacher-avatar-wrap">
+                <div class="teacher-avatar">
+                  <img
+                    src="/images/guru_b1.jpg"
+                    alt="Pengajar B"
+                    onerror="this.outerHTML = '👩‍🏫'"
+                  />
+                </div>
+              </div>
+              <div class="teacher-info">
+                <div class="teacher-name">Bunda Ratibatun Niswah, S.Pd.</div>
+                <div class="teacher-role">Pengajar Kelas B</div>
+                <span class="teacher-click-badge">👆 Klik Lihat Prestasi</span>
+              </div>
+            </div>
+            <div class="teacher-card" onclick="openTeacherModal(4)">
+              <div class="teacher-avatar-wrap">
+                <div class="teacher-avatar">
+                  <img
+                    src="/images/guru_b2.jpg"
+                    alt="Pendamping B"
+                    onerror="this.outerHTML = '👩‍🏫'"
+                  />
+                </div>
+              </div>
+              <div class="teacher-info">
+                <div class="teacher-name">Bunda Rifqiyati Zahara</div>
+                <div class="teacher-role">Pendamping Kelas B</div>
+                <span class="teacher-click-badge">👆 Klik Lihat Prestasi</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- EKSTRAKURIKULER -->
+        <section id="ekstrakurikuler" class="section">
+          <h2>Kegiatan Ekstrakurikuler Unggulan 🥁</h2>
+          <p class="desc">
+            Mengembangkan bakat, seni, motorik, dan rasa percaya diri anak didik
+            melalui berbagai kegiatan seru.
+          </p>
+          <div class="ekstra-grid">
+            <div class="ekstra-card">
+              <div class="ekstra-thumb">
+                <img
+                  src="/images/drumband.jpg"
+                  alt="Drumband"
+                  onerror="this.outerHTML = '🥁'"
+                />
+              </div>
+              <div class="ekstra-body">
+                <div class="ekstra-title">Drumband Ceria</div>
+                <div class="ekstra-desc">
+                  Melatih kekompakan, irama musik, dan kepemimpinan anak dalam
+                  bermain alat musik perkusi.
+                </div>
+              </div>
+            </div>
+            <div class="ekstra-card">
+              <div class="ekstra-thumb">
+                <img
+                  src="/images/rebana.jpg"
+                  alt="Rebana"
+                  onerror="this.outerHTML = '🪘'"
+                />
+              </div>
+              <div class="ekstra-body">
+                <div class="ekstra-title">Seni Rebana & Sholawat</div>
+                <div class="ekstra-desc">
+                  Menanamkan kecintaan pada seni Islami serta melatih kepekaan
+                  ketukan ketipung dan rebana.
+                </div>
+              </div>
+            </div>
+            <div class="ekstra-card">
+              <div class="ekstra-thumb">
+                <img
+                  src="/images/renang.jpg"
+                  alt="Renang"
+                  onerror="this.outerHTML = '🏊‍♀️'"
+                />
+              </div>
+              <div class="ekstra-body">
+                <div class="ekstra-title">Renang & Olahraga Air</div>
+                <div class="ekstra-desc">
+                  Melatih motorik kasar, keberanian, dan kesehatan fisik anak di
+                  kolam renang khusus anak yang aman.
+                </div>
+              </div>
+            </div>
+            <div class="ekstra-card">
+              <div class="ekstra-thumb">
+                <img
+                  src="/images/menari.jpg"
+                  alt="Menari"
+                  onerror="this.outerHTML = '💃'"
+                />
+              </div>
+              <div class="ekstra-body">
+                <div class="ekstra-title">Seni Tari & Kreasi</div>
+                <div class="ekstra-desc">
+                  Mengekspresikan keceriaan melalui tarian tradisional maupun
+                  modern anak yang edukatif dan sopan.
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- GALERI KEGIATAN -->
+        <section id="kegiatan-sekolah" class="section">
+          <h2>Galeri Kegiatan & Pembiasaan Sekolah 🏕️</h2>
+          <p class="desc">
+            Mengintip keceriaan aktivitas sehari-hari, perayaan hari besar,
+            hingga petualangan seru anak didik RA Tawang Rejosari.
+          </p>
+          <div class="kegiatan-grid">
+            <div class="kegiatan-card">
+              <div class="galeri-thumb-wrap">
+                <span class="galeri-badge">🏕️ Outbound & Alam</span
+                ><img
+                  src="/images/kegiatan_outbound.jpg"
+                  alt="Outbound RA"
+                  onerror="this.outerHTML = '🏕️'"
+                />
+              </div>
+              <div class="galeri-body">
+                <div class="galeri-title">
+                  Petualangan Outbound & Tadabbur Alam
+                </div>
+                <div class="galeri-desc">
+                  Melatih motorik kasar, kemandirian, keberanian, serta kerja
+                  sama tim anak melalui permainan rintang alam di luar ruangan
+                  yang aman dan menyenangkan.
+                </div>
+              </div>
+            </div>
+            <div class="kegiatan-card">
+              <div class="galeri-thumb-wrap">
+                <span class="galeri-badge">🕋 Pembiasaan Islami</span
+                ><img
+                  src="/images/kegiatan_manasik.jpg"
+                  alt="Manasik Haji"
+                  onerror="this.outerHTML = '🕋'"
+                />
+              </div>
+              <div class="galeri-body">
+                <div class="galeri-title">
+                  Manasik Haji Cilik & Sholat Dhuha Berjamaah
+                </div>
+                <div class="galeri-desc">
+                  Menanamkan kecintaan pada rukun Islam dan ibadah harian sejak
+                  dini melalui praktik peraga manasik haji dan pembiasaan sholat
+                  dhuha bersama guru.
+                </div>
+              </div>
+            </div>
+            <div class="kegiatan-card">
+              <div class="galeri-thumb-wrap">
+                <span class="galeri-badge">🎉 Perayaan Sekolah</span
+                ><img
+                  src="/images/kegiatan_phbi.jpg"
+                  alt="Peringatan Hari Besar"
+                  onerror="this.outerHTML = '🎉'"
+                />
+              </div>
+              <div class="galeri-body">
+                <div class="galeri-title">
+                  Gebyar Muharram & Pentas Seni Akhir Tahun
+                </div>
+                <div class="galeri-desc">
+                  Karnaval ceria, penampilan seni tari dan rebana anak, serta
+                  kegiatan santunan dalam rangka memperingati hari-hari besar
+                  Islam dan nasional.
+                </div>
+              </div>
+            </div>
+            <div class="kegiatan-card">
+              <div class="galeri-thumb-wrap">
+                <span class="galeri-badge">🌱 Eco-Green RA</span
+                ><img
+                  src="/images/kegiatan_berkebun.jpg"
+                  alt="Berkebun TOGA"
+                  onerror="this.outerHTML = '🌱'"
+                />
+              </div>
+              <div class="galeri-body">
+                <div class="galeri-title">
+                  Berkebun TOGA & Kreasi Daur Ulang
+                </div>
+                <div class="galeri-desc">
+                  Anak-anak belajar mencintai lingkungan dengan merawat tanaman
+                  obat keluarga serta berkreasi membuat celengan unik dari botol
+                  bekas pakai.
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- PRESTASI & PENGHARGAAN -->
+        <section id="prestasi-sekolah" class="section">
+          <h2>Prestasi & Penghargaan Membanggakan 🏆</h2>
+          <p class="desc">
+            Bukti nyata dedikasi tenaga pendidik dan semangat juang anak-anak
+            hebat KB-RA Tawang Rejosari dalam berbagai ajang perlombaan.
+          </p>
+          <div class="prestasi-grid">
+            <div class="prestasi-card">
+              <div class="galeri-thumb-wrap">
+                <span class="galeri-badge prestasi-badge"
+                  >🏆 Juara 1 Drumband</span
+                ><img
+                  src="/images/prestasi_drumband.jpg"
+                  alt="Juara Drumband"
+                  onerror="this.outerHTML = '🏆'"
+                />
+              </div>
+              <div class="galeri-body">
+                <div class="galeri-title">
+                  Juara 1 Lomba Drumband Tingkat IGRA Kota Semarang
+                </div>
+                <div class="galeri-desc">
+                  Tim Drumband Ceria RA Tawang Rejosari berhasil memboyong trofi
+                  utama berkat kekompakan irama dan formasi yang memukau dewan
+                  juri.
+                </div>
+              </div>
+            </div>
+            <div class="prestasi-card">
+              <div class="galeri-thumb-wrap">
+                <span class="galeri-badge prestasi-badge">🥇 Juara Tahfidz</span
+                ><img
+                  src="/images/prestasi_tahfidz.jpg"
+                  alt="Juara Tahfidz"
+                  onerror="this.outerHTML = '🥇'"
+                />
+              </div>
+              <div class="galeri-body">
+                <div class="galeri-title">
+                  Juara Umum Porseni & Hafalan Surat Pendek
+                </div>
+                <div class="galeri-desc">
+                  Anak didik kami sukses meraih medali emas dalam ajang
+                  perlombaan hafalan Al-Qur'an surat pendek dan lomba mewarnai
+                  tingkat kecamatan.
+                </div>
+              </div>
+            </div>
+            <div class="prestasi-card">
+              <div class="galeri-thumb-wrap">
+                <span class="galeri-badge prestasi-badge"
+                  >🥈 Juara Tari Kreasi</span
+                ><img
+                  src="/images/prestasi_tari.jpg"
+                  alt="Juara Tari"
+                  onerror="this.outerHTML = '🥈'"
+                />
+              </div>
+              <div class="galeri-body">
+                <div class="galeri-title">
+                  Juara 2 Festival Seni Tari Anak Islami
+                </div>
+                <div class="galeri-desc">
+                  Penampilan gerak tari lebah ceria yang enerjik dan sopan
+                  berhasil meraih penghargaan dalam festival seni anak madrasah
+                  se-Semarang Barat.
+                </div>
+              </div>
+            </div>
+            <div class="prestasi-card">
+              <div class="galeri-thumb-wrap">
+                <span class="galeri-badge prestasi-badge"
+                  >🎖️ Apresiasi Lembaga</span
+                ><img
+                  src="/images/prestasi_sekolah.jpg"
+                  alt="Penghargaan Sekolah"
+                  onerror="this.outerHTML = '🎖️'"
+                />
+              </div>
+              <div class="galeri-body">
+                <div class="galeri-title">
+                  Penghargaan Sekolah Ramah Anak & Bersih
+                </div>
+                <div class="galeri-desc">
+                  Apresiasi resmi atas komitmen lembaga dalam menyediakan
+                  lingkungan belajar yang inklusif, sehat, hijau, dan bebas dari
+                  perundungan (bullying).
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- FASILITAS & PERSYARATAN -->
+        <section id="fasilitas" class="section">
+          <h2>Fasilitas & Persyaratan Pendaftaran 🎁</h2>
+          <p class="desc">
+            Rincian fasilitas lengkap siswa serta syarat administrasi KB-RA
+            Tawang Rejosari TA 2026/2027.
+          </p>
+          <div class="card-grid">
+            <div
+              class="card"
+              style="border-left: 4px solid var(--primary); background: #fcfdfa"
+            >
+              <h3 style="color: var(--primary)">🎁 FASILITAS SISWA (ALL-IN)</h3>
+              <ul class="list" style="color: #3f6212; font-weight: 500">
+                <li>✔ <strong>3 Paket seragam</strong> sekolah lengkap</li>
+                <li>✔ <strong>1 Tas Sekolah</strong> eksklusif RA</li>
+                <li>✔ <strong>1 Tas Bekal</strong> harian anak</li>
+                <li>✔ <strong>Tempat bekal dan botol minum</strong></li>
+                <li>✔ <strong>Buku paket belajar</strong> selama 1 Tahun</li>
+                <li>
+                  ✔ <strong>Alat tulis lengkap</strong> (krayon, pensil, dll.)
+                </li>
+                <li>
+                  ✔
+                  <span style="color: var(--accent); font-weight: 700"
+                    >Free SPP 1 Bulan</span
+                  >
+                  *(jika lunas sebelum bulan Juli)
+                </li>
+              </ul>
+            </div>
+            <div
+              class="card"
+              style="border-left: 4px solid var(--accent); background: #fffafb"
+            >
+              <h3 style="color: var(--accent)">📋 PERSYARATAN & BIAYA</h3>
+              <ul class="list" style="color: #7f1d1d; font-size: 13px">
+                <li>1. Mengisi Formulir Pendaftaran (Online / Offline)</li>
+                <li>2. Fotokopi Akte Kelahiran (1 Lembar)</li>
+                <li>3. Fotokopi Kartu Keluarga / KK (1 Lembar)</li>
+                <li>4. Fotokopi KTP Ayah dan Ibu (1 Lembar)</li>
+                <li>
+                  5. Fotokopi
+                  <strong>Sertifikat Imunisasi / Buku KIA</strong> (1 Lembar)
+                </li>
+                <li>
+                  6.
+                  <strong
+                    >Bukti Transfer BRI / Pembayaran Tunai di Sekolah</strong
+                  >
+                </li>
+              </ul>
+              <div
+                style="
+                  margin-top: 14px;
+                  padding: 12px;
+                  background: #fee2e2;
+                  border-radius: 10px;
+                  border: 1px solid #fecaca;
+                "
+              >
+                <div
+                  style="
+                    text-align: center;
+                    margin-bottom: 8px;
+                    padding-bottom: 8px;
+                    border-bottom: 1px dashed #f87171;
+                  "
+                >
+                  <span
+                    style="
+                      font-size: 12px;
+                      color: #991b1b;
+                      display: block;
+                      font-weight: 600;
+                    "
+                    >Total Biaya Administrasi:</span
+                  >
+                  <span
+                    style="
+                      font-size: 24px;
+                      color: var(--accent);
+                      font-weight: 800;
+                    "
+                    >Rp. 1.700.000,-</span
+                  >
+                  <span
+                    style="
+                      display: inline-block;
+                      margin-top: 4px;
+                      padding: 3px 10px;
+                      background: #fff;
+                      color: #16a34a;
+                      border-radius: 999px;
+                      font-size: 11px;
+                      font-weight: 800;
+                      border: 1px solid #bbf7d0;
+                    "
+                    >✔ BISA DICICIL (ANGSURAN)</span
+                  >
+                </div>
+                <div style="font-size: 12px; color: #7f1d1d; line-height: 1.6">
+                  <strong>💳 Metode Pembayaran Resmi:</strong>
+                  <ul
+                    style="
+                      margin-left: 14px;
+                      margin-top: 2px;
+                      margin-bottom: 8px;
+                    "
+                  >
+                    <li>
+                      <strong>Transfer Bank BRI:</strong> No. Rekening
+                      konfirmasi via WA Sekolah
+                    </li>
+                    <li>
+                      <strong>Tunai (Cash):</strong> Dibayarkan langsung dengan
+                      datang ke sekolah
+                    </li>
+                  </ul>
+                  <div
+                    style="
+                      background: #ffffff;
+                      padding: 8px;
+                      border-radius: 6px;
+                      border-left: 3px solid var(--primary);
+                      color: #1a2e05;
+                    "
+                  >
+                    📌 <strong>Sistem Opsional & Ramah:</strong> Pendaftaran
+                    online bersifat mempermudah. Orang tua juga tetap bisa
+                    datang langsung ke sekolah (offline) untuk mendaftar
+                    sekaligus melakukan pembayaran angsuran pertama/lunas.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- PSB ONLINE FORM + BINGKAI POLAROID FOTO JPG -->
+        <section id="psb-online" class="section">
+          <h2>Formulir Pendaftaran KB-RA Tawang Rejosari 📝</h2>
+          <p class="desc">
+            Tahun Pelajaran 2026/2027. Isi data calon anak didik baru dengan
+            lengkap sesuai dokumen resmi.
+          </p>
+
+          <!-- BINGKAI POLAROID UNTUK FOTO JPG MASKOT -->
+          <div
+            class="mascot-box"
+            style="
+              margin-bottom: 20px;
+              background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+              border-color: #86efac;
+            "
+            onclick="
+              alert(
+                '📋 TIPS PENTING PENGISIAN FORMULIR PSB:\n\n1. Isi NIK Anak dengan benar (16 Digit sesuai Kartu Keluarga).\n2. Pastikan Nomor WhatsApp Orang Tua aktif untuk info validasi dan angsuran biaya.\n3. Unggah foto KK/Akte/Sertifikat Imunisasi yang jelas terbaca.\n\n✨ Bismillah, semoga proses pendaftaran ananda dimudahkan Allah!',
+              )
+            "
+            title="Klik untuk Tips Pengisian Formulir PSB"
+          >
+            <img
+              src="/images/maskot-putra-putri.jpg"
+              alt="Maskot Putra Putri RA"
+              class="jpg-polaroid-frame"
+              onerror="this.outerHTML = '👦🏻🧕🏻'"
+            />
+            <div style="flex-grow: 1">
+              <span
+                style="
+                  font-size: 10px;
+                  font-weight: 800;
+                  color: #166534;
+                  background: #bbf7d0;
+                  padding: 3px 10px;
+                  border-radius: 6px;
+                  text-transform: uppercase;
+                  display: inline-block;
+                  margin-bottom: 4px;
+                "
+                >Raudhatul Athfal Ceria</span
+              >
+              <div
+                style="
+                  font-size: 15px;
+                  font-weight: 800;
+                  color: #14532d;
+                  line-height: 1.2;
+                "
+              >
+                Setiap anak adalah tunas harapan. Di Raudhatul Athfal, kita tak
+                hanya menanam benih ilmu, tapi juga menanam benih iman dan
+                akhlakul karimah. Lihatlah mereka, dengan wajah ceria dan
+                langkah mantap menuju masa depan yang diridhoi Allah. Semoga
+                dari taman inilah, harumnya kebajikan mewangi hingga ke surga.
+              </div>
+              <div
+                style="
+                  font-size: 11.5px;
+                  color: #15803d;
+                  font-weight: 600;
+                  margin-top: 4px;
+                "
+              >
+                👆 Klik di sini untuk Tips & Panduan Pengisian Formulir PSB
+              </div>
+            </div>
+            <div style="font-size: 24px">✨</div>
+          </div>
+
+          <div class="form" style="border-top: 5px solid var(--primary)">
+            <form
+              id="form-psb"
+              action="/api/psb/daftar"
+              method="POST"
+              enctype="multipart/form-data"
+            >
+              <h3
+                style="
+                  color: #3f6212;
+                  margin-bottom: 14px;
+                  padding-bottom: 6px;
+                  border-bottom: 2px solid var(--border-soft);
+                "
+              >
+                A. Keterangan Anak Didik
+              </h3>
+              <div class="form-grid-smart">
+                <div>
+                  <label>1. Nama Lengkap *</label
+                  ><input
+                    type="text"
+                    name="nama_lengkap"
+                    placeholder="Contoh: Rafan Alman Winasis"
+                    required
+                  />
+                </div>
+                <div>
+                  <label>2. Nama Panggilan *</label
+                  ><input
+                    type="text"
+                    name="nama_panggilan"
+                    placeholder="Contoh: Rafan"
+                    required
+                  />
+                </div>
+                <div>
+                  <label>3. NIK (Nomor Induk Kependudukan Anak) *</label
+                  ><input
+                    type="text"
+                    name="nik"
+                    placeholder="16 Angka NIK di KK"
+                    required
+                  />
+                </div>
+                <div>
+                  <label>4. Jenis Kelamin *</label>
+                  <select name="jenis_kelamin" required>
+                    <option value="">-- Pilih --</option>
+                    <option value="Laki-laki">Laki - laki</option>
+                    <option value="Perempuan">Perempuan</option>
+                  </select>
+                </div>
+                <div>
+                  <label>5. Tempat Lahir *</label
+                  ><input
+                    type="text"
+                    name="tempat_lahir"
+                    placeholder="Contoh: Kendal / Semarang"
+                    required
+                  />
+                </div>
+                <div>
+                  <label>6. Tanggal Lahir *</label
+                  ><input type="date" name="tanggal_lahir" required />
+                </div>
+                <div>
+                  <label>7. Agama *</label
+                  ><input type="text" name="agama" value="Islam" required />
+                </div>
+                <div>
+                  <label>8. Kewarganegaraan *</label
+                  ><input
+                    type="text"
+                    name="kewarganegaraan"
+                    value="Indonesia"
+                    required
+                  />
+                </div>
+                <div>
+                  <label>9. Anak Ke- *</label
+                  ><input
+                    type="number"
+                    name="anak_ke"
+                    placeholder="Contoh: 2"
+                    required
+                  />
+                </div>
+                <div>
+                  <label>10. Jumlah Saudara Kandung *</label
+                  ><input
+                    type="number"
+                    name="jumlah_saudara"
+                    placeholder="Contoh: 1"
+                    required
+                  />
+                </div>
+                <div>
+                  <label>11. Bahasa Sehari-hari</label
+                  ><input
+                    type="text"
+                    name="bahasa_sehari"
+                    value="Jawa / Indonesia"
+                  />
+                </div>
+                <div>
+                  <label>12. Golongan Darah</label
+                  ><input
+                    type="text"
+                    name="golongan_darah"
+                    placeholder="A / B / AB / O / '-' jika tidak tahu"
+                  />
+                </div>
+                <div>
+                  <label>13. Berat / Tinggi Badan</label
+                  ><input
+                    type="text"
+                    name="berat_tinggi"
+                    placeholder="Contoh: 15 kg / 95 cm"
+                  />
+                </div>
+                <div>
+                  <label>14. Penyakit yang pernah diderita</label
+                  ><input
+                    type="text"
+                    name="penyakit_diderita"
+                    placeholder="Contoh: Tidak ada / Asma / dll"
+                  />
+                </div>
+              </div>
+
+              <div class="form-row">
+                <label>15. Alamat Tempat Tinggal Lengkap *</label
+                ><textarea
+                  name="alamat_siswa"
+                  placeholder="Dusun/Jalan, RT/RW, Kelurahan/Desa, Kecamatan, Kabupaten/Kota"
+                  required
+                ></textarea>
+              </div>
+              <div class="form-grid-smart" style="margin-bottom: 24px">
+                <div>
+                  <label>16. Telp / HP Rumah</label
+                  ><input
+                    type="text"
+                    name="telp_rumah"
+                    placeholder="Contoh: 08123456789"
+                  />
+                </div>
+                <div>
+                  <label>17. Jarak Tempat Tinggal ke Sekolah</label
+                  ><input
+                    type="text"
+                    name="jarak_sekolah"
+                    placeholder="Contoh: 500 meter / 2 km"
+                  />
+                </div>
+              </div>
+
+              <h3
+                style="
+                  color: #3f6212;
+                  margin: 20px 0 14px;
+                  padding-bottom: 6px;
+                  border-bottom: 2px solid var(--border-soft);
+                "
+              >
+                B. Orang Tua / Wali
+              </h3>
+              <div class="form-grid-smart">
+                <div>
+                  <label>18. Nama Ayah Kandung *</label
+                  ><input
+                    type="text"
+                    name="nama_ayah"
+                    placeholder="Nama lengkap Ayah"
+                    required
+                  />
+                </div>
+                <div>
+                  <label>19. Nama Ibu Kandung *</label
+                  ><input
+                    type="text"
+                    name="nama_ibu"
+                    placeholder="Nama lengkap Ibu"
+                    required
+                  />
+                </div>
+                <div>
+                  <label>20. Pendidikan Tertinggi Ayah</label>
+                  <select name="pendidikan_ayah">
+                    <option value="SMA/SMK">SMA / SMK / Sederajat</option>
+                    <option value="SMP">SMP / Sederajat</option>
+                    <option value="SD">SD / Sederajat</option>
+                    <option value="D3/S1/S2">Diploma / S1 / S2 / S3</option>
+                  </select>
+                </div>
+                <div>
+                  <label>21. Pendidikan Tertinggi Ibu</label>
+                  <select name="pendidikan_ibu">
+                    <option value="SMA/SMK">SMA / SMK / Sederajat</option>
+                    <option value="SMP">SMP / Sederajat</option>
+                    <option value="SD">SD / Sederajat</option>
+                    <option value="D3/S1/S2">Diploma / S1 / S2 / S3</option>
+                  </select>
+                </div>
+                <div>
+                  <label>22. Pekerjaan Ayah Kandung *</label>
+                  <select name="pekerjaan_ayah" required>
+                    <option value="">-- Pilih Pekerjaan Ayah --</option>
+                    <option value="PNS / ASN">PNS / ASN</option>
+                    <option value="TNI / POLRI">TNI / POLRI</option>
+                    <option value="Karyawan Swasta (Pabrik/Kantor)">
+                      Karyawan Swasta (Pabrik/Kantor)
+                    </option>
+                    <option value="Wiraswasta / Pedagang">
+                      Wiraswasta / Pedagang
+                    </option>
+                    <option value="Buruh Harian / Lepas">
+                      Buruh Harian / Lepas
+                    </option>
+                    <option value="Perbengkelan / Mekanik">
+                      Perbengkelan / Mekanik
+                    </option>
+                    <option value="Supir / Driver Online">
+                      Supir / Driver Online
+                    </option>
+                    <option value="Petani / Nelayan / Peternak">
+                      Petani / Nelayan / Peternak
+                    </option>
+                    <option value="Pekerjaan Lainnya">Pekerjaan Lainnya</option>
+                  </select>
+                </div>
+                <div>
+                  <label>23. Pekerjaan Ibu Kandung *</label>
+                  <select name="pekerjaan_ibu" required>
+                    <option value="">-- Pilih Pekerjaan Ibu --</option>
+                    <option value="Ibu Rumah Tangga (IRT)">
+                      Ibu Rumah Tangga (IRT)
+                    </option>
+                    <option value="PNS / ASN">PNS / ASN</option>
+                    <option value="Guru / Pengajar / Dosen">
+                      Guru / Pengajar / Dosen
+                    </option>
+                    <option value="Karyawan Swasta (Pabrik/Kantor)">
+                      Karyawan Swasta (Pabrik/Kantor)
+                    </option>
+                    <option value="Wiraswasta / Pedagang">
+                      Wiraswasta / Pedagang
+                    </option>
+                    <option value="Buruh Harian / Lepas">
+                      Buruh Harian / Lepas
+                    </option>
+                    <option value="Pekerjaan Lainnya">Pekerjaan Lainnya</option>
+                  </select>
+                </div>
+                <div class="full-width-field">
+                  <label style="color: var(--primary)"
+                    >24. No. WhatsApp Orang Tua yang Aktif * (Untuk info
+                    validasi & cicilan biaya)</label
+                  >
+                  <input
+                    type="text"
+                    name="no_hp_ortu"
+                    placeholder="Contoh: 081234567890"
+                    required
+                    style="border-color: var(--primary); font-weight: 600"
+                  />
+                </div>
+              </div>
+
+              <details
+                style="
+                  margin-bottom: 20px;
+                  padding: 10px;
+                  background: #fdfdfc;
+                  border: 1px solid #e2e8f0;
+                  border-radius: 8px;
+                "
+              >
+                <summary
+                  style="cursor: pointer; font-weight: 600; color: #64748b"
+                >
+                  + Isi Data Wali Anak (Klik jika anak tinggal bersama Wali)
+                </summary>
+                <div
+                  class="form-grid-smart"
+                  style="margin-top: 12px; margin-bottom: 0"
+                >
+                  <div>
+                    <label>Nama Wali</label
+                    ><input
+                      type="text"
+                      name="nama_wali"
+                      placeholder="Nama lengkap Wali"
+                    />
+                  </div>
+                  <div>
+                    <label>Pendidikan Tertinggi Wali</label
+                    ><input
+                      type="text"
+                      name="pendidikan_wali"
+                      placeholder="SMA / S1 / dll"
+                    />
+                  </div>
+                  <div>
+                    <label>Hubungan Keluarga</label
+                    ><input
+                      type="text"
+                      name="hubungan_wali"
+                      placeholder="Contoh: Kakek / Paman / Bibi"
+                    />
+                  </div>
+                  <div>
+                    <label>Pekerjaan Wali</label
+                    ><input
+                      type="text"
+                      name="pekerjaan_wali"
+                      placeholder="Pekerjaan Wali"
+                    />
+                  </div>
+                </div>
+              </details>
+
+              <h3
+                style="
+                  color: #3f6212;
+                  margin: 20px 0 14px;
+                  padding-bottom: 6px;
+                  border-bottom: 2px solid var(--border-soft);
+                "
+              >
+                C. Asal Mula Anak
+              </h3>
+              <div class="form-row">
+                <label>25. Masuk RA ini sebagai *</label>
+                <select name="status_masuk" id="status_masuk" required>
+                  <option value="Anak didik Baru">
+                    Anak didik Baru (Belum pernah sekolah)
+                  </option>
+                  <option value="Pindahan">Pindahan dari PAUD/TK lain</option>
+                </select>
+              </div>
+              <div
+                id="div_paud_asal"
+                style="
+                  display: none;
+                  padding: 12px;
+                  background: #fef9c3;
+                  border-radius: 8px;
+                  margin-bottom: 16px;
+                "
+              >
+                <div class="form-row">
+                  <label>a. Nama PAUD / TK / RA Asal</label
+                  ><input
+                    type="text"
+                    name="nama_paud_asal"
+                    placeholder="Tuliskan nama sekolah sebelumnya"
+                  />
+                </div>
+                <div class="form-row" style="margin-bottom: 0">
+                  <label>b. Tanggal Pindah</label
+                  ><input type="date" name="tanggal_pindah" />
+                </div>
+              </div>
+
+              <div
+                class="form-row"
+                style="
+                  margin-top: 24px;
+                  padding: 18px;
+                  background: #f0fdf4;
+                  border: 1.5px dashed var(--primary);
+                  border-radius: 12px;
+                "
+              >
+                <label
+                  style="
+                    color: var(--primary);
+                    font-size: 14px;
+                    margin-bottom: 8px;
+                  "
+                  >📂 Unggah Dokumen Persyaratan (KK / Akte / Imunisasi / Bukti
+                  Transfer) *</label
+                >
+                <div id="doc-upload-container">
+                  <div class="doc-upload-item">
+                    <input
+                      type="file"
+                      name="dokumen"
+                      accept=".pdf,.jpg,.jpeg,.png"
+                      required
+                    /><button
+                      type="button"
+                      class="btn-remove-doc"
+                      onclick="removeDocInput(this)"
+                      title="Hapus baris ini"
+                      style="display: none"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  class="btn-add-doc"
+                  onclick="addDocInput()"
+                  style="margin-top: 6px"
+                >
+                  + Tambah Berkas Lainnya (Jika ingin mengunggah beberapa
+                  dokumen secara terpisah)
+                </button>
+                <div class="form-note" style="margin-top: 10px">
+                  Format JPG/PNG/PDF (Maks 2 MB per file). Klik tombol
+                  <strong>"+ Tambah Berkas Lainnya"</strong> jika ingin
+                  memasukkan file Sertifikat Imunisasi, Bukti Transfer BRI, atau
+                  KTP secara sendiri-sendiri.
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                class="btn btn-primary btn-full"
+                style="
+                  margin-top: 20px;
+                  font-size: 16px;
+                  padding: 14px;
+                  background: var(--accent);
+                  border: none;
+                "
+              >
+                🚀 Kirim Formulir Pendaftaran PSB
+              </button>
+            </form>
+          </div>
+        </section>
+
+        <!-- STATUS PSB -->
+        <section id="status-psb" class="section">
+          <h2>Cek Status & Hasil Seleksi PSB 🔍</h2>
+          <p class="desc">
+            Pantau secara mandiri apakah berkas pendaftaran ananda sedang
+            diproses atau sudah dinyatakan diterima oleh pihak sekolah.
+          </p>
+          <div
+            class="card-grid"
+            style="
+              grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+              gap: 20px;
+            "
+          >
+            <div
+              class="form"
+              style="border-top: 5px solid var(--accent-yellow); height: 100%"
+            >
+              <h3 style="color: #854d0e; margin-bottom: 12px">
+                🔍 Form Pencarian Status PSB
+              </h3>
+              <p style="font-size: 13px; color: #475569; margin-bottom: 16px">
+                Masukkan kombinasi NIK Anak dan Nomor WhatsApp Orang Tua yang
+                telah didaftarkan sebelumnya.
+              </p>
+              <form action="/api/psb/cek-status" method="POST">
+                <div class="form-row">
+                  <label>1. NIK Anak (Nomor Induk Kependudukan) *</label
+                  ><input
+                    type="text"
+                    name="nik"
+                    placeholder="Contoh: 3374012911200001"
+                    required
+                    autocomplete="off"
+                  />
+                </div>
+                <div class="form-row" style="margin-bottom: 20px">
+                  <label>2. Nomor WhatsApp Orang Tua *</label
+                  ><input
+                    type="text"
+                    name="no_hp"
+                    placeholder="Contoh: 081234567890"
+                    required
+                    autocomplete="off"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  class="btn btn-primary btn-full"
+                  style="
+                    background: #ca8a04;
+                    border: none;
+                    font-size: 15px;
+                    padding: 12px;
+                  "
+                >
+                  🔍 Cek Status Sekarang
+                </button>
+              </form>
+            </div>
+            <div
+              class="card"
+              style="
+                border-left: 4px solid var(--primary);
+                background: #fcfdfa;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+              "
+            >
+              <h3 style="color: var(--primary); margin-bottom: 12px">
+                📌 Keterangan Hasil Seleksi
+              </h3>
+              <div
+                style="
+                  margin-bottom: 12px;
+                  padding: 10px;
+                  background: #dcfce7;
+                  border-radius: 8px;
+                  border: 1px solid #86efac;
+                "
+              >
+                <strong style="color: #166534; font-size: 13px; display: block"
+                  >✅ STATUS: DITERIMA</strong
+                >
+                <p style="font-size: 12px; color: #15803d; margin: 2px 0 0">
+                  Selamat! Ananda dinyatakan lulus verifikasi berkas. Orang tua
+                  dapat langsung menghubungi panitia (Bunda Faiz) untuk proses
+                  daftar ulang / angsuran.
+                </p>
+              </div>
+              <div
+                style="
+                  margin-bottom: 12px;
+                  padding: 10px;
+                  background: #fef9c3;
+                  border-radius: 8px;
+                  border: 1px solid #fde047;
+                "
+              >
+                <strong style="color: #854d0e; font-size: 13px; display: block"
+                  >⏳ STATUS: DIPROSES</strong
+                >
+                <p style="font-size: 12px; color: #a16207; margin: 2px 0 0">
+                  Formulir online dan berkas lampiran Anda sudah masuk ke
+                  database sekolah dan sedang diperiksa antriannya oleh Staf
+                  Tata Usaha.
+                </p>
+              </div>
+              <div
+                style="
+                  padding: 10px;
+                  background: #fee2e2;
+                  border-radius: 8px;
+                  border: 1px solid #fca5a5;
+                "
+              >
+                <strong style="color: #991b1b; font-size: 13px; display: block"
+                  >❌ STATUS: DITOLAK</strong
+                >
+                <p style="font-size: 12px; color: #b91c1c; margin: 2px 0 0">
+                  Berkas belum memenuhi syarat atau terdapat kesalahan ketik
+                  data. Silakan hubungi nomor kontak sekolah untuk perbaikan.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- LOKASI & PETA + KOTAK ANIMASI KATA-KATA MUTIARA -->
+        <section id="lokasi" class="section">
+          <h2>Lokasi & Kontak Resmi RA Tawang Rejosari 🗺️</h2>
+          <p class="desc">
+            Kunjungi langsung ke alamat sekolah atau ikuti serunya kegiatan
+            murid di sosial media resmi kami!
+          </p>
+          <div
+            class="card-grid"
+            style="
+              grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+              gap: 20px;
+            "
+          >
+            <!-- Kolom Kiri: Peta Lokasi -->
+            <div
+              class="card"
+              style="padding: 12px; display: flex; flex-direction: column"
+            >
+              <h3 style="color: #3f6212; margin-bottom: 10px">
+                🗺️ Peta Lokasi Sekolah
+              </h3>
+              <div id="map"></div>
+            </div>
+
+            <!-- Kolom Kanan: Kotak Animasi Kata-Kata Mutiara -->
+            <div class="quote-anim-card">
+              <div>
+                <span
+                  style="
+                    font-size: 42px;
+                    display: inline-block;
+                    animation: floatCard 3s ease-in-out infinite;
+                  "
+                  >📖✨</span
+                >
+                <h3
+                  style="
+                    color: #1a2e05;
+                    font-size: 17px;
+                    font-weight: 800;
+                    margin: 8px 0 4px;
+                  "
+                >
+                  Mutiara Pendidikan Anak
+                </h3>
+
+                <!-- Kutipan Mutiara yang Elegan -->
+                <div class="quote-bubble">
+                  "Didiklah anak-anakmu sesuai dengan zamannya, karena mereka
+                  hidup di zaman yang berbeda dengan zamanmu. Jadikan akhlak dan
+                  Al-Qur'an sebagai benteng utamanya."
+                </div>
+
+                <div
+                  style="
+                    font-size: 12px;
+                    color: #4d7c0f;
+                    font-weight: 600;
+                    margin-bottom: 16px;
+                  "
+                >
+                  🌿 RA Tawang Rejosari Semarang
+                </div>
+              </div>
+
+              <!-- Ikuti Sosial Media -->
+              <div
+                style="
+                  background: #ffffff;
+                  padding: 14px;
+                  border-radius: 14px;
+                  border: 1px solid #d9f99d;
+                  margin-top: 10px;
+                "
+              >
+                <span
+                  style="
+                    font-size: 11px;
+                    font-weight: 800;
+                    color: #854d0e;
+                    display: block;
+                    margin-bottom: 10px;
+                  "
+                  >🌐 IKUTI DOKUMENTASI KEGIATAN KAMI:</span
+                >
+                <div
+                  style="
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 8px;
+                    justify-content: center;
+                  "
+                >
+                  <a
+                    href="https://www.instagram.com/ra.tawangrejosari01/"
+                    target="_blank"
+                    class="btn btn-sm"
+                    style="
+                      background: #e1306c;
+                      color: #fff;
+                      padding: 6px 12px;
+                      display: inline-flex;
+                      align-items: center;
+                      gap: 6px;
+                    "
+                    ><img
+                      src="/images/instagram.png"
+                      alt="IG"
+                      style="width: 16px; height: 16px; object-fit: contain"
+                      onerror="this.outerHTML = '📸'"
+                    />
+                    Instagram</a
+                  >
+                  <a
+                    href="https://www.youtube.com/@ratawangrejosari"
+                    target="_blank"
+                    class="btn btn-sm"
+                    style="
+                      background: #ff0000;
+                      color: #fff;
+                      padding: 6px 12px;
+                      display: inline-flex;
+                      align-items: center;
+                      gap: 6px;
+                    "
+                    ><img
+                      src="/images/youtube.png"
+                      alt="YT"
+                      style="width: 16px; height: 16px; object-fit: contain"
+                      onerror="this.outerHTML = '▶️'"
+                    />
+                    YouTube</a
+                  >
+                  <a
+                    href="https://www.facebook.com/ra.tawangrejosari"
+                    target="_blank"
+                    class="btn btn-sm"
+                    style="
+                      background: #1877f2;
+                      color: #fff;
+                      padding: 6px 12px;
+                      display: inline-flex;
+                      align-items: center;
+                      gap: 6px;
+                    "
+                    ><img
+                      src="/images/facebook.png"
+                      alt="FB"
+                      style="width: 16px; height: 16px; object-fit: contain"
+                      onerror="this.outerHTML = '📘'"
+                    />
+                    Facebook</a
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer class="app-footer">
+      <div style="margin-bottom: 6px; font-weight: 700; color: #3f6212">
+        RA TAWANG REJOSARI SEMARANG
+      </div>
+      <div style="font-size: 12px; margin-bottom: 8px">
+        Jl. Tawang Rejosari Raya No.1, Tawangmas, Semarang Barat · Email:
+        ra.tawangrejosari@gmail.com · CP: 0882-0030-53910
+      </div>
+      &copy; 2026 Sistem Informasi & PSB Online Berbasis Web · Hak Cipta
+      Dilindungi
+    </footer>
+
+    <!-- WADAH MODAL GURU ALA NONGKEE -->
+    <div
+      id="teacherModal"
+      class="nongkee-modal-overlay"
+      onclick="closeTeacherModal(event)"
+    >
+      <div class="nongkee-modal-card" onclick="event.stopPropagation()">
+        <button
+          class="btn-close-modal"
+          onclick="closeTeacherModal(true)"
+          style="
+            top: 15px;
+            right: 15px;
+            background: #ef4444;
+            color: #fff;
+            z-index: 10;
+          "
+        >
+          ✕
+        </button>
+
+        <div class="nongkee-profile-head">
+          <img
+            id="modalTeacherImg"
+            src=""
+            alt="Foto Guru"
+            class="nongkee-avatar"
+            onerror="this.src = 'https://via.placeholder.com/80?text=Bunda'"
+          />
+          <div>
+            <span
+              id="modalTeacherRole"
+              style="
+                font-size: 11px;
+                font-weight: 800;
+                color: #854d0e;
+                background: #fde047;
+                padding: 3px 10px;
+                border-radius: 999px;
+                text-transform: uppercase;
+                display: inline-block;
+                margin-bottom: 6px;
+              "
+              >Role</span
+            >
+            <h3 id="modalTeacherName">Nama Guru</h3>
+            <p style="margin: 2px 0 0; font-size: 12px">
+              Tenaga Pendidik KB-RA Tawang Rejosari
+            </p>
+          </div>
+        </div>
+
+        <div class="nongkee-modal-body">
+          <div class="nongkee-section-title">
+            🏆 Perolehan Sertifikat & Penghargaan
+          </div>
+          <ul id="modalTeacherAwards" class="nongkee-badge-list"></ul>
+
+          <div class="nongkee-section-title">
+            📜 Sertifikasi Profesi & Pelatihan
+          </div>
+          <ul id="modalTeacherCerts" class="nongkee-badge-list"></ul>
+
+          <div class="nongkee-section-title">
+            💡 Hak Cipta Karya / Inovasi APE
+          </div>
+          <ul id="modalTeacherWorks" class="nongkee-badge-list"></ul>
+        </div>
+      </div>
+    </div>
+
+    <div
+      id="certModal"
+      class="nongkee-modal-overlay"
+      onclick="closeCertModal()"
+    >
+      <div
+        style="position: relative; max-width: 90%; max-height: 90%"
+        onclick="event.stopPropagation()"
+      >
+        <button
+          class="btn-close-modal"
+          onclick="closeCertModal()"
+          style="top: -15px; right: -15px; background: #ef4444; color: #fff"
+        >
+          ✕</button
+        ><img
+          src="/images/sertifikat-akreditasi.jpg"
+          alt="Zoom Sertifikat"
+          style="
+            max-width: 100%;
+            max-height: 85vh;
+            border-radius: 12px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+          "
+          onerror="
+            this.src =
+              'https://via.placeholder.com/600x400?text=Sertifikat+Akreditasi+BAN-PAUD+RA+Tawang+Rejosari'
+          "
+        />
+      </div>
+    </div>
+
+    <!-- TOMBOL & CHATBOT WHATSAPP -->
+    <div
+      class="wa-floating-btn"
+      onclick="toggleWaChatbot()"
+      title="Chat dengan Asisten Virtual RA"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="34"
+        height="34"
+        fill="currentColor"
+        viewBox="0 0 16 16"
+      >
+        <path
+          d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232"
+        />
+      </svg>
+    </div>
+    <div
+      id="waChatbotBox"
+      class="wa-chatbot-box"
+      onclick="event.stopPropagation()"
+    >
+      <div class="wa-chat-header">
+        <div style="display: flex; align-items: center; gap: 10px">
+          <div
+            style="
+              width: 38px;
+              height: 38px;
+              border-radius: 50%;
+              background: #fff;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-size: 20px;
+              border: 2px solid #25d366;
+              flex-shrink: 0;
+            "
+          >
+            👩‍🏫
+          </div>
+          <div>
+            <div style="font-weight: 800; font-size: 14px; line-height: 1.2">
+              Asisten Virtual RA
+            </div>
+            <div
+              style="
+                font-size: 11px;
+                opacity: 0.9;
+                display: flex;
+                align-items: center;
+                gap: 4px;
+              "
+            >
+              <span
+                style="
+                  width: 7px;
+                  height: 7px;
+                  background: #4ade80;
+                  border-radius: 50%;
+                  display: inline-block;
+                "
+              ></span>
+              Online · Bunda Faizah
+            </div>
+          </div>
+        </div>
+        <button
+          onclick="toggleWaChatbot()"
+          style="
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 18px;
+            cursor: pointer;
+            font-weight: 700;
+            padding: 4px;
+          "
+        >
+          ✕
+        </button>
+      </div>
+      <div class="wa-chat-body">
+        <div class="wa-bubble-bot">
+          <strong>Assalamu'alaikum Ayah/Bunda! 🌿</strong><br />Selamat datang
+          di layanan cepat RA Tawang Rejosari Semarang. Ada yang bisa kami bantu
+          hari ini? Silakan pilih topik pertanyaan di bawah ini:
+        </div>
+        <div class="wa-quick-options">
+          <button
+            class="wa-opt-btn"
+            onclick="
+              sendWaMessage(
+                'Halo Bunda Faizah, saya ingin menanyakan rincian BIAYA & CICILAN pendaftaran siswa baru (PSB) TA 2027/2028. Terima kasih.',
+              )
+            "
+          >
+            <span>💰 Info Biaya & Cicilan PSB</span> <span>➔</span>
+          </button>
+          <button
+            class="wa-opt-btn"
+            onclick="
+              sendWaMessage(
+                'Halo Bunda Faizah, saya ingin tanya syarat dokumen dan cara PENDAFTARAN OFFLINE langsung ke sekolah. Terima kasih.',
+              )
+            "
+          >
+            <span>📝 Syarat & Daftar Offline</span> <span>➔</span>
+          </button>
+          <button
+            class="wa-opt-btn"
+            onclick="
+              sendWaMessage(
+                'Halo Bunda Faizah, saya ingin meminta bantuan untuk CEK STATUS pendaftaran anak saya. Terima kasih.',
+              )
+            "
+          >
+            <span>🔍 Bantuan Cek Status PSB</span> <span>➔</span>
+          </button>
+          <button
+            class="wa-opt-btn"
+            onclick="
+              sendWaMessage(
+                'Assalamu\'alaikum Bunda Faizah, saya ingin KONSULTASI LANGSUNG terkait pendidikan dan pendaftaran anak didik baru. Terima kasih.',
+              )
+            "
+          >
+            <span>💬 Konsultasi Langsung (Chat Bunda)</span> <span>➔</span>
+          </button>
+        </div>
+      </div>
+      <div
+        style="
+          padding: 10px 14px;
+          background: #f8fafc;
+          font-size: 11px;
+          color: #64748b;
+          text-align: center;
+          border-top: 1px solid #e2e8f0;
+          font-weight: 600;
+        "
+      >
+        ⚡ Respon Cepat via WhatsApp Resmi RA Tawang Rejosari
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="/js/main.js"></script>
+    <script>
+      const lat = -6.972,
+        lng = 110.393;
+      const map = L.map("map").setView([lat, lng], 16);
+      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution: "&copy; OpenStreetMap",
+      }).addTo(map);
+      L.marker([lat, lng])
+        .addTo(map)
+        .bindPopup(
+          `<div style="font-family: sans-serif; line-height: 1.4; text-align: center;"><h4 style="margin: 0 0 4px 0; color: #3f6212; font-size: 14px;">🕌 KB-RA Tawang Rejosari</h4><p style="margin: 0; font-size: 12px; color: #475569;">Jl. Tawang Rejosari Raya No.1, Tawangmas,<br>Semarang Barat, Kota Semarang</p></div>`,
+        )
+        .openPopup();
+
+      document
+        .getElementById("status_masuk")
+        .addEventListener("change", function () {
+          document.getElementById("div_paud_asal").style.display =
+            this.value === "Pindahan" ? "block" : "none";
+        });
+      function addDocInput() {
+        const container = document.getElementById("doc-upload-container");
+        const div = document.createElement("div");
+        div.className = "doc-upload-item";
+        div.innerHTML = `<input type="file" name="dokumen" accept=".pdf,.jpg,.jpeg,.png" required /><button type="button" class="btn-remove-doc" onclick="removeDocInput(this)" title="Hapus baris ini">✕</button>`;
+        container.appendChild(div);
+        updateRemoveButtons();
+      }
+      function removeDocInput(btn) {
+        if (
+          document.getElementById("doc-upload-container").children.length > 1
+        ) {
+          btn.parentElement.remove();
+          updateRemoveButtons();
+        }
+      }
+      function updateRemoveButtons() {
+        const items = document.querySelectorAll(".doc-upload-item");
+        items.forEach((item) => {
+          item.querySelector(".btn-remove-doc").style.display =
+            items.length === 1 ? "none" : "flex";
+        });
+      }
+
+      const teacherData = [
+        {
+          name: "Bunda Faizah, S.Pd.AUD., M.Pd.",
+          role: "Kepala Sekolah RA",
+          img: "/images/kepsek.jpg",
+          awards: [
+            "Kepala RA Berprestasi Tingkat Kota Semarang (2024)",
+            "Juara 1 Lomba Inovasi Manajemen Pembelajaran PAUD Kemenag (2023)",
+          ],
+          certs: [
+            "Sertifikasi Pendidik Profesional Guru PAUD/TK (Kemdikbud/Kemenag)",
+            "Asesor Resmi Badan Akreditasi Nasional (BAN-PAUD dan PNF)",
+            "Diklat Kepemimpinan & Transformasi Madrasah Era Digital",
+          ],
+          works: [
+            "Buku Panduan 'Manajemen RA Berbasis Karakter Islami' (HKI/ISBN 2023)",
+            "Modul Ajar Pembelajaran Berdiferensiasi Anak Usia Dini",
+          ],
+        },
+        {
+          name: "Bunda Fitri Astutik, S.Sos., MM.",
+          role: "Pengajar Kelas A",
+          img: "/images/guru_a1.jpg",
+          awards: [
+            "Guru Dedikatif & Inspiratif RA Tawang Rejosari (2025)",
+            "Penggerak Gerakan Literasi Sejak Dini Tingkat Kecamatan",
+          ],
+          certs: [
+            "Sertifikasi Guru Pendamping Muda PAUD Terpadu",
+            "Pelatihan Implementasi Kurikulum Merdeka (IKM) Berbasis Bermain",
+            "Workshop Psikologi Tumbuh Kembang & Komunikasi Anak",
+          ],
+          works: [
+            "Inovasi Alat Peraga Edukatif (APE) 'Pohon Huruf Hijaiyah Interaktif'",
+            "Penyusun Kurikulum Pembiasaan PHBS Anak Usia Dini",
+          ],
+        },
+        {
+          name: "Bunda Tazkiya Ihza Rahmania",
+          role: "Pendamping Kelas A",
+          img: "/images/guru_a2.jpg",
+          awards: ["Guru Pendamping Terfavorit Pilihan Wali Murid (2025)"],
+          certs: [
+            "Pelatihan Dasar Metode Pembelajaran Montessori untuk PAUD",
+            "Workshop Digital Storytelling & Mendongeng Anak Usia Dini",
+            "Pelatihan Pertolongan Pertama Pada Kecelakaan (P3K) Anak",
+          ],
+          works: [
+            "Kreator Seri Video Animasi Edukasi Sholawat & Doa Harian Anak",
+            "Media Belajar Sensori Motorik dari Bahan Alam",
+          ],
+        },
+        {
+          name: "Bunda Ratibatun Niswah, S.Pd.",
+          role: "Pengajar Kelas B",
+          img: "/images/guru_b1.jpg",
+          awards: [
+            "Juara 2 Lomba Mendongeng Sirah Nabawiyah Tingkat IGRA (2024)",
+            "Guru Teladan Pembina Akhlak & Ibadah Harian",
+          ],
+          certs: [
+            "Sertifikasi Pendidik Sarjana (S1) Pendidikan Anak Usia Dini",
+            "Pelatihan Pendekatan STEAM (Science, Tech, Art, Math) di RA",
+            "Diklat Deteksi Dini Anak Berkebutuhan Khusus (ABK)",
+          ],
+          works: [
+            "Modul Belajar Membaca & Menulis Permulaan yang Menyenangkan",
+            "Desain Kartu Bergambar (Flashcard) Kosakata Bahasa Arab Anak",
+          ],
+        },
+        {
+          name: "Bunda Rifqiyati Zahara",
+          role: "Pendamping Kelas B",
+          img: "/images/guru_b2.jpg",
+          awards: ["Guru Kreatif Pembuat APE Bahan Daur Ulang Terbaik (2025)"],
+          certs: [
+            "Workshop Seni Tari & Kreasi Gerak Anak Usia Dini",
+            "Pelatihan Manajemen Kelas & Pengendalian Emosi Anak (Positive Discipline)",
+            "Diklat Pembelajaran Al-Qur'an Metode Iqro & Qiroati",
+          ],
+          works: [
+            "Koreografi 'Tari Kreasi Lebah Ceria' untuk Pentas Seni Akhir Tahun",
+            "Alat Musik Perkusi Edukatif dari Barang Bekas Pakai",
+          ],
+        },
+      ];
+
+      function openTeacherModal(index) {
+        const data = teacherData[index];
+        document.getElementById("modalTeacherName").innerText = data.name;
+        document.getElementById("modalTeacherRole").innerText = data.role;
+        document.getElementById("modalTeacherImg").src = data.img;
+
+        const populateList = (id, items, badgeClass, emoji) => {
+          const ul = document.getElementById(id);
+          ul.innerHTML = "";
+          items.forEach((item) => {
+            const li = document.createElement("li");
+            li.className = `nongkee-badge-item ${badgeClass}`;
+            li.innerHTML = `<span>${emoji}</span> <span>${item}</span>`;
+            li.onclick = () =>
+              alert(
+                `✨ BUKTI TERVERIFIKASI RESMI:\n\n"${item}"\n\nAlhamdulillah, bukti dedikasi tenaga pendidik RA Tawang Rejosari Semarang.`,
+              );
+            ul.appendChild(li);
+          });
+        };
+
+        populateList("modalTeacherAwards", data.awards, "badge-award", "🏆");
+        populateList("modalTeacherCerts", data.certs, "badge-cert", "📜");
+        populateList("modalTeacherWorks", data.works, "badge-work", "💡");
+
+        document.getElementById("teacherModal").classList.add("active");
+        document.body.style.overflow = "hidden";
+      }
+      function closeTeacherModal(e) {
+        if (e === true || e.target.id === "teacherModal") {
+          document.getElementById("teacherModal").classList.remove("active");
+          document.body.style.overflow = "auto";
+        }
+      }
+      function openCertModal() {
+        document.getElementById("certModal").classList.add("active");
+        document.body.style.overflow = "hidden";
+      }
+      function closeCertModal() {
+        document.getElementById("certModal").classList.remove("active");
+        document.body.style.overflow = "auto";
+      }
+      function toggleWaChatbot() {
+        document.getElementById("waChatbotBox").classList.toggle("active");
+      }
+      function sendWaMessage(text) {
+        window.open(
+          `https://wa.me/62882003053910?text=${encodeURIComponent(text)}`,
+          "_blank",
+        );
+      }
+
+      document.addEventListener("click", function (e) {
+        const navServices = document.querySelector(".nav-services"),
+          serviceToggle = document.getElementById("service-toggle");
+        if (navServices && serviceToggle && !navServices.contains(e.target)) {
+          serviceToggle.checked = false;
+        }
+        const waBox = document.getElementById("waChatbotBox"),
+          waBtn = document.querySelector(".wa-floating-btn");
+        if (
+          waBox &&
+          waBox.classList.contains("active") &&
+          !waBox.contains(e.target) &&
+          (!waBtn || !waBtn.contains(e.target))
+        ) {
+          waBox.classList.remove("active");
+        }
+      });
+    </script>
+  </body>
+</html>

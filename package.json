@@ -1,0 +1,23 @@
+{
+  "name": "ra-tawang-rejosari-app",
+  "version": "1.0.0",
+  "description": "Sistem Informasi & PSB Online RA Tawang Rejosari Semarang",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [
+    "psb-online",
+    "sistem-informasi-sekolah",
+    "visitor-tracker"
+  ],
+  "author": "Jihan Afina",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "multer": "^1.4.5-lts.1",
+    "mysql2": "^3.10.0"
+  }
+}
